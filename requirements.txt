@@ -1,0 +1,7 @@
+argparse
+requests
+pynput
+pyautogui
+subprocess
+winreg
+numpy
