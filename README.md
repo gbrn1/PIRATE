@@ -1,2 +1,2 @@
 # PIRATE
-Python Remot Acces Tooll
+Python Remot Acces Tool
