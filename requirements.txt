@@ -6,3 +6,4 @@ subprocess
 winreg
 numpy
 python>=3.3
+opencv
