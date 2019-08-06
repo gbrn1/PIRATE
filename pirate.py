@@ -152,9 +152,11 @@ class RAT:
     
 def init():
     if len(sys.argv) >= 2:
-        main = RAT(sys.argv[1])
+        main = RAT(int(sys.argv[1]))
         main.clear()
         main.banner()
         main.listen()
     else:
         print('Usage: pirate.py <port>')
+
+init()
