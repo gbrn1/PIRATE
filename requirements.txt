@@ -2,7 +2,5 @@ argparse
 requests
 pynput
 pyautogui
-subprocess
-winreg
 numpy
-opencv
+opencv-python
